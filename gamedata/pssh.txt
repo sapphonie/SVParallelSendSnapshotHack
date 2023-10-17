@@ -1,0 +1,14 @@
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"CBaseClient__IgnoreTempEntity"
+			{
+				"library"	"engine"
+				"windows"	"\x55\x8B\xEC\x53\x56\x8B\xF1\x57\x33\xFF"
+			}
+		}
+	}
+}
