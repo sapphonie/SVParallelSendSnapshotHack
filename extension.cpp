@@ -40,6 +40,10 @@ DETOUR_DECL_MEMBER1(CBaseClient__IgnoreTempEntity, bool, void*, event)
     // definitely threading shennanigans...
     if ( !_this || _this <= VALID_MINIMUM_MEMORY_ADDRESS )
     {
+        char err[256] = {};
+        snprintf(err, sizeof(err), "CBaseClient__IgnoreTempEntity DETOUR: this = %x, ignoring!", _this);
+        smutils->LogError(myself, "%s", err);
+        Warning("%s\n", err);
         return false;
     }
     // GetPlayerSlot is a function that gets called from the this ptr
