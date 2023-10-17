@@ -51,7 +51,7 @@ DETOUR_DECL_MEMBER1(CBaseClient__IgnoreTempEntity, bool, void*, event)
     // so we can just directly do that instead
     // mov eax,dword ptr [ecx+14h]
     int slot = *( reinterpret_cast<int*>( _this + 0x14 ) );
-
+    slot++;
     if (slot <= 0)
     {
         return false;
