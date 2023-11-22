@@ -66,7 +66,7 @@ DETOUR_DECL_MEMBER1(CBaseClient__IgnoreTempEntity, bool, void*, event)
 #endif
 
     int slot = 0;
-    slot = *(reinterpret_cast<int*>(_this + offset));
+    slot = *(reinterpret_cast<int*>(_this + slotOffset));
     slot++;
     if (slot <= 0)
     {
