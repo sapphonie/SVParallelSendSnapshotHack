@@ -4,10 +4,6 @@ SVParallelSendSnapshotHack  g_pssh;		/**< Global singleton for extension's main 
 SMEXT_LINK(&g_pssh);
 
 
-//memory addresses below 0x10000 are automatically considered invalid for dereferencing
-//this is copied over from smn_core.cpp
-#define VALID_MINIMUM_MEMORY_ADDRESS 0x10000
-
 DETOUR_DECL_MEMBER1(CBaseClient__IgnoreTempEntity, bool, void*, event)
 {
 /*
@@ -38,7 +34,15 @@ DETOUR_DECL_MEMBER1(CBaseClient__IgnoreTempEntity, bool, void*, event)
 
     // HACK since somehow `this` keeps ending up as 0x1c
     // definitely threading shennanigans...
-    if ( !_this || _this <= VALID_MINIMUM_MEMORY_ADDRESS )
+    if
+    (
+          !_this
+        || _this <= 0x00081000
+        /* had a crash with
+            this	0x00080021 {...} CBaseClient__IgnoreTempEntityClass*
+            once...
+        */
+    )
     {
         char err[256] = {};
         snprintf(err, sizeof(err), "CBaseClient__IgnoreTempEntity DETOUR: this = %x, ignoring!", _this);
@@ -46,6 +50,7 @@ DETOUR_DECL_MEMBER1(CBaseClient__IgnoreTempEntity, bool, void*, event)
         Warning("%s\n", err);
         return false;
     }
+
     // GetPlayerSlot is a function that gets called from the this ptr
     // It would look like this in code
     // auto offs = (*(uint32_t*)this + 12);
@@ -54,7 +59,14 @@ DETOUR_DECL_MEMBER1(CBaseClient__IgnoreTempEntity, bool, void*, event)
     // and doesn't do anything fancy,
     // so we can just directly do that instead
     // mov eax,dword ptr [ecx+14h]
-    int slot = *( reinterpret_cast<int*>( _this + 0x14 ) );
+#ifdef _WIN32
+    constexpr const static int slotOffset = 0x14;
+#else
+#error NOT IMPLD
+#endif
+
+    int slot = 0;
+    slot = *(reinterpret_cast<int*>(_this + offset));
     slot++;
     if (slot <= 0)
     {
