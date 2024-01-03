@@ -68,8 +68,13 @@ DETOUR_DECL_MEMBER1(CBaseClient__IgnoreTempEntity, bool, void*, event)
     int slot = 0;
     slot = *(reinterpret_cast<int*>(_this + slotOffset));
     slot++;
-    if (slot <= 0)
+    if (slot <= 0 || slot > 102)
     {
+        char err[256] = {};
+        snprintf(err, sizeof(err), "CBaseClient__IgnoreTempEntity DETOUR: slot = %i, ignoring!", slot);
+        smutils->LogError(myself, "%s", err);
+        Warning("%s\n", err);
+
         return false;
     }
     // Yes, the slot logic will rerun - that's ok.
